@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Dashboard.apps.DashboardConfig',
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    # my_app:
+    'Dashboard.apps.DashboardConfig',
+    "Ticketing.apps.TicketingConfig",
 ]
 
 MIDDLEWARE = [
@@ -105,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 # تنظیمات زمان و تاریخ
-LANGUAGE_CODE = 'fa'
+LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
