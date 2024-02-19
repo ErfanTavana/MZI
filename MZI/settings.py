@@ -14,9 +14,9 @@ from pathlib import Path
 import os
 from pathlib import Path
 from django.urls import path
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -27,8 +27,7 @@ SECRET_KEY = 'django-insecure-=a=a!77b!)qv2nnr-qvhh(p=8-z-utghu+r0@)8uvhuvn*_)9_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -40,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Dashboard.apps.DashboardConfig',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -47,9 +49,11 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'MZI.urls'
@@ -73,7 +77,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MZI.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -83,7 +86,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -102,26 +104,39 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
+# تنظیمات زمان و تاریخ
+LANGUAGE_CODE = 'fa'
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
+# تنظیمات فایل‌های استاتیک و رسانه‌ها
+STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+]
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
+# تنظیمات REST framework برای استفاده از توکن برای احراز هویت
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
 
-STATIC_URL = 'static/'
+# تنظیمات CORS برای اجازه دسترسی به API از دامنه‌های مشخص
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+]
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
+# تنظیمات امان برای کوکی‌ها و سشن
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
 
+# زمینه پیشفرض برای مدل‌های جدید در Django 3.2+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
