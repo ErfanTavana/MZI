@@ -44,6 +44,10 @@ INSTALLED_APPS = [
     # my_app:
     'Dashboard.apps.DashboardConfig',
     "Ticketing.apps.TicketingConfig",
+    # 'Article.apps.ArticleConfig', # فعلا غیر فعال
+    'Account.apps.AccountConfig',
+    'Article',
+    'Portfolio',
 ]
 
 MIDDLEWARE = [
