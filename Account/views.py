@@ -7,7 +7,10 @@ from rest_framework.decorators import authentication_classes, permission_classes
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
-
+from rest_framework.permissions import IsAuthenticated
+from Account.models import AdminMZI
+from Account.serializers import AdminMZISerializer
+from .permissios import UserIsAdminMzi
 
 ################################################################
 
@@ -38,3 +41,19 @@ def login(request):
 
         else:
             return Response({'message': 'کاربر وجود ندارد  یا رمز عبور اشتباه است'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST",'GET'])
+@permission_classes([UserIsAdminMzi])
+def profile(request):
+    if request.method == 'GET':
+        profile = AdminMZI.objects.get(user=request.user)
+        serializer = AdminMZISerializer(profile)
+        return Response({'message': 'اطلاعات کاربری شما', 'data': serializer.data}, status=status.HTTP_200_OK)
+    if request.method == 'POST':
+        data = request.data
+        profile = AdminMZI.objects.get(user=request.user)
+        serializer = AdminMZISerializer(instance=profile, data=data)
+        if serializer.is_valid():
+            serializer.save()
+        return Response({'message': 'اطلاعات کاربری شما', 'data': serializer.data}, status=status.HTTP_200_OK)
