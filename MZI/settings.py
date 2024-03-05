@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'Account.apps.AccountConfig',
     'Article',
     'Portfolio',
+
+    'Certificate',
 ]
 
 MIDDLEWARE = [

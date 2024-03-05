@@ -25,5 +25,6 @@ urlpatterns = [
     path('', include("Account.urls")),
     path('', include("Article.urls")),
     path('', include("Portfolio.urls")),
+    path('', include("Certificate.urls")),
 
 ]
