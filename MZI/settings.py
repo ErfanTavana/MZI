@@ -43,13 +43,13 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     # my_app:
     'Dashboard.apps.DashboardConfig',
-    "Ticketing.apps.TicketingConfig",
     # 'Article.apps.ArticleConfig', # فعلا غیر فعال
     'Account.apps.AccountConfig',
     'Article',
     'Portfolio',
 
     'Certificate',
+    'Ticketing',
 ]
 
 MIDDLEWARE = [

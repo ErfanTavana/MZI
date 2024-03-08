@@ -6,6 +6,13 @@ from rest_framework.decorators import api_view, permission_classes
 from .serializers import PortfoliosSerializer, CategoryArticleSerializer, TagArticleSerializer
 from .models import CategoryArticle, TagArticle, Portfolio
 from Account.permissios import UserIsAdminMzi
+from rest_framework.pagination import PageNumberPagination
+
+
+class CustomPageNumberPagination(PageNumberPagination):
+    page_size = 7  # تعداد آیتم‌ها در هر صفحه
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
 
 
 @api_view(["POST", "GET", 'DELETE', 'PUT'])
@@ -18,9 +25,14 @@ def admin_portfolio(request):
         data = request.data
     user = request.user
     if request.method == "GET":
-        article = Portfolio.objects.filter(is_ok=True, deleted_at=None)
-        serializer = PortfoliosSerializer(article, many=True)
-        return Response({"message": 'لیست نمونه کار های شما', 'data': serializer.data}, status=status.HTTP_200_OK)
+        portfolios = Portfolio.objects.filter(is_ok=True, deleted_at=None)
+
+        # اعمال صفحه بندی
+        paginator = CustomPageNumberPagination()
+        result_page = paginator.paginate_queryset(portfolios, request)
+
+        serializer = PortfoliosSerializer(result_page, many=True)
+        return paginator.get_paginated_response({"message": 'لیست نمونه کار های شما', 'data': serializer.data})
     if request.method == "POST":
         categories_list = []
         hashtags_list = []
@@ -49,7 +61,8 @@ def admin_portfolio(request):
         serializer = PortfoliosSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": 'نمونه کار با موفقیت ثبت شد', 'data': serializer.data}, status=status.HTTP_200_OK)
+            return Response({"message": 'نمونه کار با موفقیت ثبت شد', 'data': serializer.data},
+                            status=status.HTTP_200_OK)
         else:
             return Response({"message": 'خطا در مقادیر ارسالی', 'data': serializer.errors})
     if request.method == "DELETE":
@@ -96,6 +109,39 @@ def admin_portfolio(request):
         serializer = PortfoliosSerializer(instance=article, data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": 'نمونه کار با موفقیت اپدیت شد', 'data': serializer.data}, status=status.HTTP_200_OK)
+            return Response({"message": 'نمونه کار با موفقیت اپدیت شد', 'data': serializer.data},
+                            status=status.HTTP_200_OK)
         else:
             return Response({"message": 'خطا در مقادیر ارسالی', 'data': serializer.errors})
+
+
+class PortfolioPagination(PageNumberPagination):
+    page_size = 9  # تعداد آیتم‌ها در هر صفحه
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+
+@api_view(["POST", "GET", 'DELETE', 'PUT'])
+def portfolio(request):
+    is_body = bool(request.body)
+    if request.method == 'GET' and not is_body:
+        data = request.GET
+    else:
+        data = request.data
+    user = request.user
+    if request.method == "GET":
+        portfolio_id = data.get('portfolio_id', None)
+        if portfolio_id != None:
+            try:
+                portfolio = Portfolio.objects.get(id=portfolio_id, is_ok=True, deleted_at=None)
+                serializer = PortfoliosSerializer(portfolio)
+                return Response({"message": 'جزئیات نمونه کار', 'data': serializer.data})
+            except:
+                return Response({"message": 'نمونه کار با این شناسه یافت نشد', 'data': ''},
+                                status=status.HTTP_400_BAD_REQUEST)
+        else:
+            portfolio = Portfolio.objects.filter(deleted_at=None, is_ok=True)
+            paginator = PortfolioPagination()
+            result_page = paginator.paginate_queryset(portfolio, request)
+            serializer = PortfoliosSerializer(result_page, many=True)
+            return paginator.get_paginated_response({"message": 'لیست نمونه کار های شما', 'data': serializer.data})

@@ -6,7 +6,7 @@ class UserIsAdminMzi(BasePermission):  # دسترسی تنظیمات هتل
     def has_permission(self, request, view):
         try:
             user = request.user
-            AdminMZI.objects.get(user=user, is_admin=True)
+            AdminMZI.objects.get(user=user, is_admin=True, deleted_at=None)
             return True
         except:
             return False
