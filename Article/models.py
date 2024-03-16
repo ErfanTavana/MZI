@@ -41,6 +41,4 @@ class Article(Base_Model):
     def save(self, *args, **kwargs):
         # حذف فواصل چپ و راست از نام دسته بندی
         self.title = self.title.strip()
-        self.title = self.title.replace(' ', '_')
-        # فراخوانی متد save اصلی
         super().save(*args, **kwargs)
