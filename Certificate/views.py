@@ -60,17 +60,20 @@ def admin_certificate(request):
             return Response({"message": 'شناسه مدرک اشتباه است', 'data': ''}, status=status.HTTP_400_BAD_REQUEST)
     if request.method == 'DELETE':
         certificate_id = data.get('certificate_id')
+        certificate_id = certificate_id.split(',')
         try:
-            certificate = Certificate.objects.get(deleted_at=None, is_ok=True, id=certificate_id)
-            certificate.soft_delete(deleted_by=user)
+            certificate = Certificate.objects.filter(deleted_at=None, is_ok=True, id__in=certificate_id).delete()
             return Response({"message": 'مدرک با موفقیت حذف شد', 'data': ''},
                             status=status.HTTP_200_OK)
         except:
             return Response({"message": 'شناسه مدرک اشتباه است', 'data': ''}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class CertificatePagination(PageNumberPagination):
     page_size = 9  # تعداد آیتم‌ها در هر صفحه
     page_size_query_param = 'page_size'
     max_page_size = 1000
+
 
 @api_view(["GET"])
 @permission_classes([UserIsAdminMzi])

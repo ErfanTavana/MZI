@@ -67,9 +67,9 @@ def admin_article(request):
             return Response({"message": 'خطا در مقادیر ارسالی', 'data': serializer.errors})
     if request.method == "DELETE":
         article_id = data.get('article_id')
+        article_id = article_id.split(',')
         try:
-            article = Article.objects.get(id=article_id, deleted_at=None, deleted_by=None)
-            article.soft_delete(deleted_by=user)
+            article = Article.objects.filter(id__in=article_id, deleted_at=None, deleted_by=None).delete()
             return Response({'message': 'مقاله با موفقیت حذف شد'}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)

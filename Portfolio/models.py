@@ -2,6 +2,8 @@ from django.db import models
 from MZI.models import Base_Model
 from Article.models import CategoryArticle, TagArticle
 from django.contrib.auth.models import User
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 
 class Portfolio(Base_Model):
@@ -20,3 +22,10 @@ class Portfolio(Base_Model):
         # حذف فواصل چپ و راست از نام دسته بندی
         self.title = self.title.strip()
         super().save(*args, **kwargs)
+
+
+@receiver(pre_delete, sender=Portfolio)
+def delete_portfolio_files(sender, instance, **kwargs):
+    # حذف فایل مرتبط با نمونه کار
+    if instance.image:
+        instance.image.delete(save=False)

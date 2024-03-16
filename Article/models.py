@@ -1,7 +1,8 @@
 from django.db import models
 from MZI.models import Base_Model
 from django.contrib.auth.models import User
-
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 class CategoryArticle(Base_Model):
     name = models.CharField(max_length=100, unique=True, verbose_name='نام دسته بندی')
@@ -42,3 +43,8 @@ class Article(Base_Model):
         # حذف فواصل چپ و راست از نام دسته بندی
         self.title = self.title.strip()
         super().save(*args, **kwargs)
+@receiver(pre_delete, sender=Article)
+def delete_article_files(sender, instance, **kwargs):
+    # حذف فایل مرتبط با مقاله
+    if instance.image:
+        instance.image.delete(save=False)
